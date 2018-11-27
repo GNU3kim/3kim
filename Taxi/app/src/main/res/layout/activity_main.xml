@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+
+    <LinearLayout
+        android:id="@+id/success_layout"
+
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+        <Button
+            android:id="@+id/in"
+            android:background="@color/colorAccent"
+            android:textColor="#fff"
+            android:text="같이타기"
+            android:onClick="onClick2"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"/>
+
+        <Button
+            android:id="@+id/logout"
+            android:background="@color/colorAccent"
+            android:textColor="#fff"
+            android:text="로그아웃"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"/>
+
+
+    </LinearLayout>
+
+
+    <com.kakao.usermgmt.LoginButton
+        android:id="@+id/com_kakao_login"
+        android:layout_width="300dp"
+        android:layout_height="70dp" />
+
+
+
+</LinearLayout>

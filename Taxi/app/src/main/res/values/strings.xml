@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Taxi</string>
+    <string name="kakao_app_key"> 23c26a8c6d943d3d9bd236ac1c2100b7 </string>
+</resources>

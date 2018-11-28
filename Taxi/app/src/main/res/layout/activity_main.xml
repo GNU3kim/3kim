@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff770"
     android:gravity="center">
 
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="313dp"
+        android:layout_height="125dp"
+        android:src="@drawable/typing" />
 
     <LinearLayout
         android:id="@+id/success_layout"
 
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="250dp">
+        android:layout_height="125dp"
+        android:gravity="center">
+
         <Button
             android:id="@+id/in"
-            android:background="@color/colorAccent"
-            android:textColor="#fff"
-            android:text="같이타기"
-            android:onClick="onClick2"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            android:background="@color/appTheme2"
+            android:onClick="onClick2"
+            android:text="같이타기"
+            android:textColor="#fff"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/logout"
-            android:background="@color/colorAccent"
-            android:textColor="#fff"
-            android:text="로그아웃"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            android:background="@color/appTheme2"
+            android:text="로그아웃"
+            android:textColor="#fff"
+            android:textStyle="bold" />
 
 
     </LinearLayout>

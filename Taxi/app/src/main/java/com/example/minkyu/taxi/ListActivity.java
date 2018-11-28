@@ -3,6 +3,7 @@ package com.example.minkyu.taxi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -24,7 +25,7 @@ import java.net.HttpURLConnection;
 
 public class ListActivity extends AppCompatActivity {
 
-    private static String IP_ADDRESS = "172.17.125.44"; //서버 ip주소로 변경해줘야함
+    private static String IP_ADDRESS = "192.168.0.195"; //서버 ip주소로 변경해줘야함
     private static String TAG = "phptest";
 
     private EditText mEditTextDep;
@@ -39,6 +40,12 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+        ActionBar ab = getSupportActionBar() ;
+
+        ab.setIcon(R.drawable.typing) ;
+        ab.setDisplayUseLogoEnabled(true) ;
+        ab.setDisplayShowHomeEnabled(true);
 
         adspin1 = ArrayAdapter.createFromResource(ListActivity.this,R.array.time,R.layout.list_item);
         adspin2 = ArrayAdapter.createFromResource(ListActivity.this, R.array.min,R.layout.list_item);

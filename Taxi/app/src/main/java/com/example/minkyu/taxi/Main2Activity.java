@@ -3,6 +3,7 @@ package com.example.minkyu.taxi;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,6 +44,13 @@ public class Main2Activity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+
+        ActionBar ab = getSupportActionBar() ;
+
+        ab.setIcon(R.drawable.typing) ;
+        ab.setDisplayUseLogoEnabled(true) ;
+        ab.setDisplayShowHomeEnabled(true);
+
         final EditText depText = (EditText) findViewById(R.id.depText);
         final EditText desText = (EditText) findViewById(R.id.desText);
         list = (ListView) findViewById(R.id.listView);
@@ -53,7 +61,7 @@ public class Main2Activity extends AppCompatActivity {
                 new String[]{TAG_DEP,TAG_DES,TAG_TIME,TAG_min},
                 new int[]{R.id.dep1_text,R.id.des1_text,R.id.time1_text,R.id.min1_text}
         );
-        getData("http://172.17.125.44/PHP_connection.php"); //서버 ip주소로 변경해줘야함
+        getData("http://192.168.0.195/PHP_connection.php"); //서버 ip주소로 변경해줘야함
 
 
         depText.addTextChangedListener(new TextWatcher() {

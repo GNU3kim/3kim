@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ import java.net.HttpURLConnection;
 
 public class ListActivity extends AppCompatActivity {
 
-    private static String IP_ADDRESS = "192.168.0.195"; //서버 ip주소로 변경해줘야함
+    private static String IP_ADDRESS = "192.168.0.103"; //서버 ip주소로 변경해줘야함
     private static String TAG = "phptest";
 
     private EditText mEditTextDep;
@@ -33,7 +34,6 @@ public class ListActivity extends AppCompatActivity {
     private EditText mEditTextadd;
     private EditText mEditTextSay;
     private EditText mEditTextPhone;
-    private TextView mTextViewResult;
     ArrayAdapter<CharSequence> adspin1, adspin2;
 
     @Override
@@ -77,10 +77,8 @@ public class ListActivity extends AppCompatActivity {
        mEditTextDes = (EditText)findViewById(R.id.editText_main_des);
        mEditTextadd = (EditText)findViewById(R.id.addr_editText);
        mEditTextSay = (EditText)findViewById(R.id.SayeditText);
-       mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
        mEditTextPhone = (EditText)findViewById(R.id.PhoneeditText);
 
-       mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
 
         Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
         buttonInsert.setOnClickListener(new View.OnClickListener() {
@@ -95,8 +93,22 @@ public class ListActivity extends AppCompatActivity {
                 String say = mEditTextSay.getText().toString();
                 InsertData task = new InsertData();
                 task.execute("http://" + IP_ADDRESS + "/insert.php", dep,des,time,min,addr,phone,say);
+
+                if(dep.length() == 0){
+                    Toast.makeText(getApplicationContext(),"출발지를 입력해주세요!!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if(des.length() == 0){
+                    Toast.makeText(getApplicationContext(),"목적지를 입력해주세요!!"
+                            ,Toast.LENGTH_LONG).show();
+                }
+                else if(addr.length() == 0 && phone.length() == 0){
+                    Toast.makeText(getApplicationContext(),"카카오톡 ID / 연락처 중 하나라도 " +
+                                    "입력해주세요", Toast.LENGTH_LONG).show();
+                }
+
                 if(dep.length() != 0  && des.length() != 0 &&
-                        addr.length() != 0) {
+                        (addr.length() != 0 || phone.length() !=0)) {
                     mEditTextDep.setText("");
                     mEditTextDes.setText("");
                     mEditTextadd.setText("");
@@ -104,6 +116,8 @@ public class ListActivity extends AppCompatActivity {
                     mEditTextPhone.setText("");
                     Intent intent = new Intent(ListActivity.this, Main2Activity.class);
                     startActivity(intent);
+                    Toast.makeText(getApplicationContext(),"추가되었습니다 !!"
+                            ,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -123,7 +137,6 @@ public class ListActivity extends AppCompatActivity {
             super.onPostExecute(result);
 
             progressDialog.dismiss();
-            mTextViewResult.setText(result);
             Log.d(TAG,"POST response -"+result);
         }
 

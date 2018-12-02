@@ -61,7 +61,7 @@ public class Main2Activity extends AppCompatActivity {
                 new String[]{TAG_DEP,TAG_DES,TAG_TIME,TAG_min},
                 new int[]{R.id.dep1_text,R.id.des1_text,R.id.time1_text,R.id.min1_text}
         );
-        getData("http://192.168.0.195/PHP_connection.php"); //서버 ip주소로 변경해줘야함
+        getData("http://192.168.0.103/PHP_connection.php"); //서버 ip주소로 변경해줘야함
 
 
         depText.addTextChangedListener(new TextWatcher() {

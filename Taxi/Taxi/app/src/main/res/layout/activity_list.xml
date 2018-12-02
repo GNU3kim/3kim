@@ -22,8 +22,8 @@
         android:id="@+id/textView_main_des"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="도착지"
-        android:textStyle="bold"/>
+        android:text="목적지"
+        android:textStyle="bold" />
 
     <EditText
         android:layout_width="match_parent"
@@ -126,10 +126,5 @@
         android:background="@color/appTheme2"
         android:text="추가하기"
         android:textColor="#fff"/>
-
-    <TextView
-        android:id="@+id/textView_main_result"
-        android:layout_width="match_parent"
-        android:layout_height="250dp" />
 
 </LinearLayout>

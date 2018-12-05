@@ -81,7 +81,7 @@ public class ShareActivity extends AppCompatActivity {
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i2 = new Intent(ShareActivity.this, Main2Activity.class);
+                Intent i2 = new Intent(ShareActivity.this, ListActivity.class);
                 startActivity(i2);
             }
         });

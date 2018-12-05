@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,9 +23,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.HttpURLConnection;
 
-public class ListActivity extends AppCompatActivity {
+public class ListaddActivity extends AppCompatActivity {
 
-    private static String IP_ADDRESS = "192.168.0.103"; //서버 ip주소로 변경해줘야함
+    private static String IP_ADDRESS = "192.168.0.195"; //서버 ip주소로 변경해줘야함
     private static String TAG = "phptest";
 
     private EditText mEditTextDep;
@@ -39,7 +38,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_listadd);
 
         ActionBar ab = getSupportActionBar() ;
 
@@ -47,8 +46,8 @@ public class ListActivity extends AppCompatActivity {
         ab.setDisplayUseLogoEnabled(true) ;
         ab.setDisplayShowHomeEnabled(true);
 
-        adspin1 = ArrayAdapter.createFromResource(ListActivity.this,R.array.time,R.layout.list_item);
-        adspin2 = ArrayAdapter.createFromResource(ListActivity.this, R.array.min,R.layout.list_item);
+        adspin1 = ArrayAdapter.createFromResource(ListaddActivity.this,R.array.time,R.layout.list_item);
+        adspin2 = ArrayAdapter.createFromResource(ListaddActivity.this, R.array.min,R.layout.list_item);
 
         final TextView tv = (TextView)findViewById(R.id.textView_spinner);
         final TextView tv2 = (TextView)findViewById(R.id.textView_minspinner);
@@ -114,90 +113,12 @@ public class ListActivity extends AppCompatActivity {
                     mEditTextadd.setText("");
                     mEditTextSay.setText("");
                     mEditTextPhone.setText("");
-                    Intent intent = new Intent(ListActivity.this, Main2Activity.class);
+                    Intent intent = new Intent(ListaddActivity.this, ListActivity.class);
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(),"추가되었습니다 !!"
                             ,Toast.LENGTH_LONG).show();
                 }
             }
         });
-    }
-
-    private class InsertData extends AsyncTask<String, Void, String > {
-        ProgressDialog progressDialog;
-
-        protected void onPreExecute(){
-            super.onPreExecute();
-
-            progressDialog = ProgressDialog.show(ListActivity.this,"please wait"
-            ,null,true,true);
-        }
-
-        protected void onPostExecute(String result){
-            super.onPostExecute(result);
-
-            progressDialog.dismiss();
-            Log.d(TAG,"POST response -"+result);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String dep = (String)params[1];
-            String des = (String)params[2];
-            String time = (String)params[3];
-            String min = (String)params[4];
-            String addr = (String)params[5];
-            String phone = (String)params[6];
-            String say = (String)params[7];
-
-            String serverURL = (String)params[0];
-            String postParameters = "&dep=" + dep + "&des=" + des + "&time=" + time + "&min=" +
-                    min+ "&addr=" + addr + "&phone="+ phone + "&say=" + say;
-            try {
-
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-                httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.connect();
-
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                outputStream.write(postParameters.getBytes("UTF-8"));
-                outputStream.flush();
-                outputStream.close();
-
-
-                int responseStatusCode = httpURLConnection.getResponseCode();
-                Log.d(TAG, "POST response code - " + responseStatusCode);
-
-                InputStream inputStream;
-                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
-                    inputStream = httpURLConnection.getInputStream();
-                }
-                else{
-                    inputStream = httpURLConnection.getErrorStream();
-                }
-
-
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                StringBuilder sb = new StringBuilder();
-                String line = null;
-
-                while((line = bufferedReader.readLine()) != null){
-                    sb.append(line);
-                }
-                bufferedReader.close();
-                return sb.toString();
-            } catch (Exception e) {
-
-                Log.d(TAG, "InsertData: Error ", e);
-
-                return new String("Error: " + e.getMessage());
-            }
-        }
     }
 }

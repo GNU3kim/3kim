@@ -23,30 +23,31 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Main2Activity extends AppCompatActivity {
-    String myJSON;
-    private static final String TAG_RESULTS = "result";
-    private static final String TAG_DEP = "dep";
-    private static final String TAG_DES = "des";
-    private static final String TAG_TIME = "time";
-    private static final String TAG_min = "min";
-    private  static final String TAG_ADDR = "addr";
-    private static final String TAG_PHONE = "phone";
-    private static final  String TAG_SAY = "say";
+public class ListActivity extends AppCompatActivity {
+    static String myJSON;
+    static String TAG_RESULTS = "result";
+    static String TAG_DEP = "dep";
+    static String TAG_DES = "des";
+    static String TAG_TIME = "time";
+    static String TAG_min = "min";
+    static String TAG_ADDR = "addr";
+    static String TAG_PHONE = "phone";
+    static String TAG_SAY = "say";
 
-    JSONArray Taxi = null;
+    static JSONArray Taxi = null;
 
-    ArrayList<HashMap<String, String>> taxiList;
-    ArrayList<HashMap<String, String>> saveList;
-    ListView list;
-    SimpleAdapter adapter;
+    static ArrayList<HashMap<String, String>> taxiList;
+    static ArrayList<HashMap<String, String>> saveList;
+    static ListView list;
+    static SimpleAdapter adapter;
+    GetDataJSON getDataJSON;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_list);
 
         ActionBar ab = getSupportActionBar() ;
-
         ab.setIcon(R.drawable.typing) ;
         ab.setDisplayUseLogoEnabled(true) ;
         ab.setDisplayShowHomeEnabled(true);
@@ -57,13 +58,13 @@ public class Main2Activity extends AppCompatActivity {
         taxiList = new ArrayList<HashMap<String, String>>();
         saveList = new ArrayList<HashMap<String, String>>();
         adapter = new SimpleAdapter(
-                Main2Activity.this, taxiList, R.layout.list_item,
+                ListActivity.this, taxiList, R.layout.list_item,
                 new String[]{TAG_DEP,TAG_DES,TAG_TIME,TAG_min},
                 new int[]{R.id.dep1_text,R.id.des1_text,R.id.time1_text,R.id.min1_text}
         );
-        getData("http://192.168.0.103/PHP_connection.php"); //서버 ip주소로 변경해줘야함
 
-
+        getDataJSON = new GetDataJSON();
+        getDataJSON.execute("http://192.168.0.195/PHP_connection.php"); //서버 ip주소로 변경해줘야함
         depText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -112,7 +113,7 @@ public class Main2Activity extends AppCompatActivity {
                 saveList.clear();
                 depText.setText("");
                 desText.setText("");
-                showList();
+                getDataJSON.showList();
             }
         });
     }
@@ -130,6 +131,7 @@ public class Main2Activity extends AppCompatActivity {
             }
         }adapter.notifyDataSetChanged();
     }
+
     private void filter2(CharSequence s) {
         EditText depText = (EditText) findViewById(R.id.depText);
         String dep = depText.getText().toString();
@@ -143,84 +145,13 @@ public class Main2Activity extends AppCompatActivity {
         }adapter.notifyDataSetChanged();
     }
 
-
     public void backClick(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
     public void searchClick(View view) {
-        Intent intent = new Intent(this, ListActivity.class);
+        Intent intent = new Intent(this, ListaddActivity.class);
         startActivity(intent);
-    }
-
-    public void showList(){
-        try{
-            JSONObject jsonObj = new JSONObject(myJSON);
-            Taxi = jsonObj.getJSONArray(TAG_RESULTS);
-
-            for(int i = 0; i < Taxi.length(); i++){
-                JSONObject c = Taxi.getJSONObject(i);
-                String dep = c.getString(TAG_DEP);
-                String des = c.getString(TAG_DES);
-                String time = c.getString(TAG_TIME);
-                String min = c.getString(TAG_min);
-                String id = c.getString(TAG_ADDR);
-                String phone = c.getString(TAG_PHONE);
-                String say = c.getString(TAG_SAY);
-                HashMap<String, String> lists = new HashMap<String, String>();
-
-                lists.put(TAG_DEP, dep);
-                lists.put(TAG_DES, des);
-                lists.put(TAG_TIME, time);
-                lists.put(TAG_min, min);
-                lists.put(TAG_ADDR, id);
-                lists.put(TAG_PHONE, phone);
-                lists.put(TAG_SAY, say);
-                taxiList.add(lists);
-                saveList.add(lists);
-            }
-            list.setAdapter(adapter);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void getData(String url) {
-        class GetDataJSON extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-
-                String uri = params[0];
-
-                BufferedReader bufferedReader = null;
-                try {
-                    URL url = new URL(uri);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    StringBuilder sb = new StringBuilder();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-                    String json;
-                    while ((json = bufferedReader.readLine()) != null) {
-                        sb.append(json + "\n");
-                    }
-
-                    return sb.toString().trim();
-
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                myJSON = result;
-                showList();
-            }
-        }
-        GetDataJSON g = new GetDataJSON();
-        g.execute(url);
     }
 }

@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -24,9 +23,8 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 import com.kakao.util.helper.log.Logger;
-import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private SessionCallback callback;
     LinearLayout success_layout;
     Button logout_btn;
@@ -38,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         aQuery = new AQuery(this);
         callback = new SessionCallback();
         Session.getCurrentSession().addCallback(callback);
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                     if(!isConnected()){
-                        Toast.makeText(MainActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
                     }
                 }
                 if(isConnected()){
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
 
 
         // 로그인 성공 시 사용할 뷰
@@ -107,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick2(View view) {
-        Intent intent = new Intent(this, Main2Activity.class);
+        Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
 
@@ -139,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "로그아웃 성공", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "로그아웃 성공", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -178,6 +175,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Session.getCurrentSession().removeCallback(callback);
     }
-
-
 }

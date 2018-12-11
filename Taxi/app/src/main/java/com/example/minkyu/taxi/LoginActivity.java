@@ -31,9 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     LoginButton loginButton;
 
     AQuery aQuery;
-    ConnectivityManager cm;
-    NetworkInfo netInfo;
-    Context context;
 
 
     @Override
@@ -43,8 +40,6 @@ public class LoginActivity extends AppCompatActivity {
         aQuery = new AQuery(this);
         callback = new SessionCallback();
         Session.getCurrentSession().addCallback(callback);
-        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        netInfo = cm.getActiveNetworkInfo();
         // 카카오톡 로그인 버튼
         loginButton = (LoginButton)findViewById(R.id.com_kakao_login);
         loginButton.setOnTouchListener(new View.OnTouchListener() {
@@ -52,25 +47,17 @@ public class LoginActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
 
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    if(!isConnected(context)){
+                    if(!isConnected()){
                         Toast.makeText(LoginActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
                     }
                 }
-                if(isConnected(context)){
-                        Log.d("aaa","연결됨");
-                        return false;
-                    }else{
-                        Log.d("aaaaa","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                if(isConnected()){
+                    return false;
+                }else{
                     return true;
                 }
             }
         });
-        if(isConnected(context)){
-            Log.d("aaa","true");
-        }
-        else{
-            Log.d("aaaaa","false");
-        }
 
 
         // 로그인 성공 시 사용할 뷰
@@ -97,8 +84,14 @@ public class LoginActivity extends AppCompatActivity {
 
 
     //인터넷 연결상태 확인
-    public boolean isConnected(Context context) {
-        return netInfo != null && netInfo.isConnected();
+    public boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -140,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
         UserManagement.requestLogout(new LogoutResponseCallback() {
             @Override
             public void onCompleteLogout() {
-                    runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(LoginActivity.this, "로그아웃 성공", Toast.LENGTH_SHORT).show();

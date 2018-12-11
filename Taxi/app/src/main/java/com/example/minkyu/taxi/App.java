@@ -19,9 +19,6 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.kakao.util.helper.Utility.getPackageInfo;
 
-/**
- * Created by q on 2017-07-07.
- */
 
 public class App extends Application {
 
@@ -51,9 +48,7 @@ public class App extends Application {
                 }
 
                 @Override
-                public boolean isSaveFormData() {
-                    return true;
-                }
+                public boolean isSaveFormData() {  return true;  }
             };
         }
 

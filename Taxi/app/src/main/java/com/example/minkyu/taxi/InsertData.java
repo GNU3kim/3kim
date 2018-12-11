@@ -19,7 +19,7 @@ public class InsertData extends AsyncTask<String, Void, String > {
     protected void onPostExecute(String result){
         super.onPostExecute(result);
         Log.d(TAG,"POST response -"+result);
-    }
+}
 
     @Override
     protected String doInBackground(String... params) {

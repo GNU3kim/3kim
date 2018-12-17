@@ -13,7 +13,7 @@
         android:label="TAX/n"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
+        <activity android:name=".LoginActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
 
         </activity>
@@ -23,11 +23,11 @@
             android:value="@string/kakao_app_key" />
 
         <activity
-            android:name=".Main2Activity"
+            android:name=".ListActivity"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".ListActivity" />
+        <activity android:name=".ListaddActivity" />
         <activity android:name=".ShareActivity" />
-        <activity android:name=".firstView"
+        <activity android:name=".FirstView"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-public class firstView extends Activity {
+import java.lang.reflect.Array;
+
+public class FirstView extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logo);
-
 
         Handler hand = new Handler();
 
@@ -19,8 +20,7 @@ public class firstView extends Activity {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
-                Intent i = new Intent(firstView.this, MainActivity.class);
+                Intent i = new Intent(FirstView.this, LoginActivity.class);
                 startActivity(i);
 
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -28,7 +28,6 @@ public class firstView extends Activity {
 
             }
         }, 2000);
-
 
     }
 }

@@ -1,190 +1,157 @@
 package com.example.minkyu.taxi;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ListActivity extends AppCompatActivity {
+    static String myJSON;
+    static String TAG_RESULTS = "result";
+    static String TAG_DEP = "dep";
+    static String TAG_DES = "des";
+    static String TAG_TIME = "time";
+    static String TAG_min = "min";
+    static String TAG_ADDR = "addr";
+    static String TAG_PHONE = "phone";
+    static String TAG_SAY = "say";
 
-    private static String IP_ADDRESS = "192.168.0.195"; //서버 ip주소로 변경해줘야함
-    private static String TAG = "phptest";
+    static JSONArray Taxi = null;
 
-    private EditText mEditTextDep;
-    private EditText mEditTextDes;
-    private EditText mEditTextadd;
-    private EditText mEditTextSay;
-    private EditText mEditTextPhone;
-    private TextView mTextViewResult;
-    ArrayAdapter<CharSequence> adspin1, adspin2;
+    static ArrayList<HashMap<String, String>> taxiList;
+    static ArrayList<HashMap<String, String>> saveList;
+    static ListView list;
+    static SimpleAdapter adapter;
+    GetDataJSON getDataJSON;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
         ActionBar ab = getSupportActionBar() ;
-
         ab.setIcon(R.drawable.typing) ;
         ab.setDisplayUseLogoEnabled(true) ;
         ab.setDisplayShowHomeEnabled(true);
 
-        adspin1 = ArrayAdapter.createFromResource(ListActivity.this,R.array.time,R.layout.list_item);
-        adspin2 = ArrayAdapter.createFromResource(ListActivity.this, R.array.min,R.layout.list_item);
+        final EditText depText = (EditText) findViewById(R.id.depText);
+        final EditText desText = (EditText) findViewById(R.id.desText);
+        list = (ListView) findViewById(R.id.listView);
+        taxiList = new ArrayList<HashMap<String, String>>();
+        saveList = new ArrayList<HashMap<String, String>>();
+        adapter = new SimpleAdapter(
+                ListActivity.this, taxiList, R.layout.list_item,
+                new String[]{TAG_DEP,TAG_DES,TAG_TIME,TAG_min},
+                new int[]{R.id.dep1_text,R.id.des1_text,R.id.time1_text,R.id.min1_text}
+        );
 
-        final TextView tv = (TextView)findViewById(R.id.textView_spinner);
-        final TextView tv2 = (TextView)findViewById(R.id.textView_minspinner);
-        final Spinner s = (Spinner)findViewById(R.id.spinner);
-        final Spinner s2 = (Spinner)findViewById(R.id.min_spinner);
-
-
-        s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        getDataJSON = new GetDataJSON();
+        getDataJSON.execute("http://192.168.0.195/PHP_connection.php"); //서버 ip주소로 변경해줘야함
+        depText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                tv.setText(adspin1.getItem(position)+"시");
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filter(s);
             }
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
-        s2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                    tv2.setText(adspin2.getItem(position)+"분");
-                }
+
+        desText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filter2(s);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
-       mEditTextDep = (EditText)findViewById(R.id.editText_main_dep);
-       mEditTextDes = (EditText)findViewById(R.id.editText_main_des);
-       mEditTextadd = (EditText)findViewById(R.id.addr_editText);
-       mEditTextSay = (EditText)findViewById(R.id.SayeditText);
-       mTextViewResult = (TextView)findViewById(R.id.textView_main_result);
-       mEditTextPhone = (EditText)findViewById(R.id.PhoneeditText);
-
-       mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
-
-        Button buttonInsert = (Button)findViewById(R.id.button_main_insert);
-        buttonInsert.setOnClickListener(new View.OnClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
+                intent.putExtra("Dep",taxiList.get(position).get(TAG_DEP));
+                intent.putExtra("Des",taxiList.get(position).get(TAG_DES));
+                intent.putExtra("Time",taxiList.get(position).get(TAG_TIME));
+                intent.putExtra("Min",taxiList.get(position).get(TAG_min));
+                intent.putExtra("Addr",taxiList.get(position).get(TAG_ADDR));
+                intent.putExtra("Phone",taxiList.get(position).get(TAG_PHONE));
+                intent.putExtra("Say",taxiList.get(position).get(TAG_SAY));
+                startActivity(intent);
+            }
+        });
+        Button button = (Button) findViewById(R.id.rfbtn);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String dep = mEditTextDep.getText().toString();
-                String des = mEditTextDes.getText().toString();
-                String time = tv.getText().toString();
-                String min = tv2.getText().toString();
-                String addr = mEditTextadd.getText().toString();
-                String phone = mEditTextPhone.getText().toString();
-                String say = mEditTextSay.getText().toString();
-                InsertData task = new InsertData();
-                task.execute("http://" + IP_ADDRESS + "/insert.php", dep,des,time,min,addr,phone,say);
-                if(dep.length() != 0  && des.length() != 0 &&
-                        addr.length() != 0) {
-                    mEditTextDep.setText("");
-                    mEditTextDes.setText("");
-                    mEditTextadd.setText("");
-                    mEditTextSay.setText("");
-                    mEditTextPhone.setText("");
-                    Intent intent = new Intent(ListActivity.this, Main2Activity.class);
-                    startActivity(intent);
-                }
+                taxiList.clear();
+                saveList.clear();
+                depText.setText("");
+                desText.setText("");
+                getDataJSON.showList();
             }
         });
     }
 
-    private class InsertData extends AsyncTask<String, Void, String > {
-        ProgressDialog progressDialog;
-
-        protected void onPreExecute(){
-            super.onPreExecute();
-
-            progressDialog = ProgressDialog.show(ListActivity.this,"please wait"
-            ,null,true,true);
+    private void filter(CharSequence s) {
+        taxiList.clear();
+        if(s.length() == 0){
+            taxiList.addAll(saveList);
         }
-
-        protected void onPostExecute(String result){
-            super.onPostExecute(result);
-
-            progressDialog.dismiss();
-            mTextViewResult.setText(result);
-            Log.d(TAG,"POST response -"+result);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String dep = (String)params[1];
-            String des = (String)params[2];
-            String time = (String)params[3];
-            String min = (String)params[4];
-            String addr = (String)params[5];
-            String phone = (String)params[6];
-            String say = (String)params[7];
-
-            String serverURL = (String)params[0];
-            String postParameters = "&dep=" + dep + "&des=" + des + "&time=" + time + "&min=" +
-                    min+ "&addr=" + addr + "&phone="+ phone + "&say=" + say;
-            try {
-
-                URL url = new URL(serverURL);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-
-                httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.connect();
-
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                outputStream.write(postParameters.getBytes("UTF-8"));
-                outputStream.flush();
-                outputStream.close();
-
-
-                int responseStatusCode = httpURLConnection.getResponseCode();
-                Log.d(TAG, "POST response code - " + responseStatusCode);
-
-                InputStream inputStream;
-                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
-                    inputStream = httpURLConnection.getInputStream();
+        else{
+            for(int i = 0; i < saveList.size(); i++){
+                if(saveList.get(i).get(TAG_DEP).contains(s)){
+                    taxiList.add(saveList.get(i));
                 }
-                else{
-                    inputStream = httpURLConnection.getErrorStream();
-                }
-
-
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-                StringBuilder sb = new StringBuilder();
-                String line = null;
-
-                while((line = bufferedReader.readLine()) != null){
-                    sb.append(line);
-                }
-                bufferedReader.close();
-                return sb.toString();
-            } catch (Exception e) {
-
-                Log.d(TAG, "InsertData: Error ", e);
-
-                return new String("Error: " + e.getMessage());
             }
-        }
+        }adapter.notifyDataSetChanged();
+    }
+
+    private void filter2(CharSequence s) {
+        EditText depText = (EditText) findViewById(R.id.depText);
+        String dep = depText.getText().toString();
+        taxiList.clear();
+        for(int i = 0; i < saveList.size(); i++){
+            if(saveList.get(i).get(TAG_DES).contains(s)){
+                if(saveList.get(i).get(TAG_DEP).contains(dep)){
+                    taxiList.add(saveList.get(i));
+                }
+            }
+        }adapter.notifyDataSetChanged();
+    }
+
+    public void backClick(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void searchClick(View view) {
+        Intent intent = new Intent(this, ListaddActivity.class);
+        startActivity(intent);
     }
 }

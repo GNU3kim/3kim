@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidquery.AQuery;
@@ -24,24 +23,28 @@ import com.kakao.usermgmt.callback.MeResponseCallback;
 import com.kakao.usermgmt.response.model.UserProfile;
 import com.kakao.util.exception.KakaoException;
 import com.kakao.util.helper.log.Logger;
-import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private SessionCallback callback;
     LinearLayout success_layout;
     Button logout_btn;
     LoginButton loginButton;
 
     AQuery aQuery;
+    ConnectivityManager cm;
+    NetworkInfo netInfo;
+    Context context;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         aQuery = new AQuery(this);
         callback = new SessionCallback();
         Session.getCurrentSession().addCallback(callback);
+        cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = cm.getActiveNetworkInfo();
         // 카카오톡 로그인 버튼
         loginButton = (LoginButton)findViewById(R.id.com_kakao_login);
         loginButton.setOnTouchListener(new View.OnTouchListener() {
@@ -49,18 +52,25 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
 
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    if(!isConnected()){
-                        Toast.makeText(MainActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
+                    if(!isConnected(context)){
+                        Toast.makeText(LoginActivity.this,"인터넷 연결을 확인해주세요",Toast.LENGTH_SHORT).show();
                     }
                 }
-                if(isConnected()){
-                    return false;
-                }else{
+                if(isConnected(context)){
+                        Log.d("aaa","연결됨");
+                        return false;
+                    }else{
+                        Log.d("aaaaa","xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
                     return true;
                 }
             }
         });
-
+        if(isConnected(context)){
+            Log.d("aaa","true");
+        }
+        else{
+            Log.d("aaaaa","false");
+        }
 
 
         // 로그인 성공 시 사용할 뷰
@@ -87,14 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     //인터넷 연결상태 확인
-    public boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-
-        return false;
+    public boolean isConnected(Context context) {
+        return netInfo != null && netInfo.isConnected();
     }
 
 
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClick2(View view) {
-        Intent intent = new Intent(this, Main2Activity.class);
+        Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
 
@@ -136,10 +140,10 @@ public class MainActivity extends AppCompatActivity {
         UserManagement.requestLogout(new LogoutResponseCallback() {
             @Override
             public void onCompleteLogout() {
-                runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "로그아웃 성공", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "로그아웃 성공", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -178,6 +182,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Session.getCurrentSession().removeCallback(callback);
     }
-
-
 }
